@@ -5,14 +5,17 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY pyproject.toml README.md ./
-COPY src ./src
-
 RUN mkdir -p /app/config /app/data/input /app/output /run/secrets
 
-COPY config/*.example.json ./config/
+RUN apt-get update && apt-get install -y --no-install-recommends curl git
 
-RUN pip install --no-cache-dir .
+RUN git clone https://github.com/itsdapolice/yuki-translator
+
+RUN cp -r yuki-translator/config/*.example.json ./config/
+
+RUN pip install --no-cache-dir yuki-translator/.
+
+RUN rm -r yuki-translator
 
 EXPOSE 8000
 ENTRYPOINT ["fantranslate"]
